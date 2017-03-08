@@ -5,6 +5,7 @@ test.py
 *.pyc
 tmp
 /models/*
+!/models/.gitkeep
 
 # 書き方
 # 特定の拡張子を無視する場合はどこにも/を付けない
