@@ -1,0 +1,17 @@
+# ignore jpeg because these are large
+*.jpg
+*.jpeg
+test.py
+*.pyc
+tmp
+/models/*
+
+# 書き方
+# 特定の拡張子を無視する場合はどこにも/を付けない
+#*.o
+
+# 特定のファイルを無視する場合は先頭に/を付ける
+#/npm-debug.log
+
+# 特定のディレクトリ以下すべてを無視する場合は先頭と末尾に/を付ける
+#/bin/*
