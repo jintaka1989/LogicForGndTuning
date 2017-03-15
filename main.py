@@ -4,12 +4,12 @@ import os
 import commands as cmd
 import cv2
 import numpy as np
-import tensorflow as tf
-import tensorflow.python.platform
 from PIL import Image
 import scipy
 from scipy import ndimage
 from image_data_set import ImageDataSet
+
+import neural_net
 
 # import use_model
 # import neural_net
@@ -31,4 +31,9 @@ if __name__ == "__main__":
     ImageDataSet.joint_train_labels(app_root_path, NUM_CLASSES)
     ImageDataSet.joint_test_labels(app_root_path, NUM_CLASSES)
     # use_model.pyの実行
-    os.system("python use_model.py")
+    # os.system("python use_model.py")
+    img = cv2.imread("tmp/147.jpg", 1)
+    net = neural_net.NeuralNet()
+    # net.classificate_face()
+    print net.classificate_one_face(img)
+    net.classificate_face()

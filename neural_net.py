@@ -28,22 +28,24 @@ FOR_OPTIMIZER = float(inifile.get("settings", "for_optimizer"))
 POOL_TIMES = int(inifile.get("settings", "pool_times"))
 POOL_SIZE = int(inifile.get("settings", "pool_size"))
 REDUCTION = POOL_SIZE*POOL_TIMES
+MODEL_PATH = str(inifile.get("settings", "model_path"))
+CLASSLIST_PATH = str(inifile.get("settings", "classlist_path"))
 
 class NeuralNet(object):
     """docstring for NeuralNet."""
     def __init__(self):
         super(NeuralNet, self).__init__()
-        self.flags = tf.app.flags
-        self.FLAGS = self.flags.FLAGS
-        self.flags.DEFINE_string('readmodels', 'models/model.ckpt', 'File name of model data')
-        self.flags.DEFINE_string('train', 'data_set/train.txt', 'File name of train data')
-        self.flags.DEFINE_string('test', 'data_set/test.txt', 'File name of test data')
-        self.flags.DEFINE_string('train_dir', '/tmp/pict_data', 'Directory to put the data_set data.')
-        self.flags.DEFINE_integer('max_steps', MAX_STEPS, 'Number of steps to run trainer.')
-        self.flags.DEFINE_integer('batch_size', 256, 'Batch size'
-                             'Must divide evenly into the dataset sizes.')
-        self.flags.DEFINE_float('learning_rate', FOR_OPTIMIZER, 'Initial learning rate.')
-        self.flags.DEFINE_string('classlist', 'data_set/classlist.txt', 'File name of each class data')
+        # self.flags = tf.app.flags
+        # self.FLAGS = self.flags.FLAGS
+        # self.flags.DEFINE_string('readmodels', 'models/model.ckpt', 'File name of model data')
+        # self.flags.DEFINE_string('train', 'data_set/train.txt', 'File name of train data')
+        # self.flags.DEFINE_string('test', 'data_set/test.txt', 'File name of test data')
+        # self.flags.DEFINE_string('train_dir', '/tmp/pict_data', 'Directory to put the data_set data.')
+        # self.flags.DEFINE_integer('max_steps', MAX_STEPS, 'Number of steps to run trainer.')
+        # self.flags.DEFINE_integer('batch_size', 256, 'Batch size'
+                            #  'Must divide evenly into the dataset sizes.')
+        # self.flags.DEFINE_float('learning_rate', FOR_OPTIMIZER, 'Initial learning rate.')
+        # self.flags.DEFINE_string('classlist', 'data_set/classlist.txt', 'File name of each class data')
 
         self.images_placeholder = tf.placeholder("float", shape=(None, IMAGE_PIXELS))
         labels_placeholder = tf.placeholder("float", shape=(None, NUM_CLASSES))
@@ -54,7 +56,7 @@ class NeuralNet(object):
 
         saver = tf.train.Saver()
         sess.run(tf.initialize_all_variables())
-        saver.restore(sess,self.FLAGS.readmodels)
+        saver.restore(sess, MODEL_PATH)
 
     def preprocess(self, img):
         # # ガンマ定数の定義
@@ -126,7 +128,7 @@ class NeuralNet(object):
         font = cv2.FONT_HERSHEY_PLAIN
         font_size = 1
 
-        with open(self.FLAGS.classlist, 'r') as f: # train.txt
+        with open(CLASSLIST_PATH, 'r') as f: # classlist.txt
             classlist = []
             for line in f:
                 line = line.rstrip()
@@ -179,7 +181,7 @@ class NeuralNet(object):
         else:
             i = int(max(files).replace(".jpg", "").replace("tmp/", ""))
 
-        with open(self.FLAGS.classlist, 'r') as f: # train.txt
+        with open(CLASSLIST_PATH, 'r') as f: # train.txt
             classlist = []
             for line in f:
                 line = line.rstrip()
@@ -288,6 +290,7 @@ if __name__ == "__main__":
     net = NeuralNet()
     # net.classificate_face()
     print net.classificate_one_face(img)
+    net.classificate_face()
 
     # net2 = NeuralNet()
     # # net.classificate_face()
