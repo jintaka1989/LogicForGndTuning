@@ -11,6 +11,9 @@ import scipy
 from scipy import ndimage
 from image_data_set import ImageDataSet
 
+# import use_model
+# import neural_net
+
 # read config.ini
 import ConfigParser
 inifile = ConfigParser.SafeConfigParser()

@@ -76,48 +76,33 @@ def inference(images_placeholder, keep_prob):
                             strides=[1, 2, 2, 1], padding='SAME')
     # 入力をIMAGE_SIZExIMAGE_SIZExIMAGE_CHANNELに変形
     x_images = tf.reshape(images_placeholder, [-1, IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNEL])
-    consta1 = 64
-    consta1_2 = 96
-    consta2 = 128
-    consta2_2 = 256
-    consta3 = 1024
     # 畳み込み層1の作成
     with tf.name_scope('conv1') as scope:
-        W_conv1 = weight_variable([5, 5, IMAGE_CHANNEL, consta1])
-        b_conv1 = bias_variable([consta1])
+        W_conv1 = weight_variable([5, 5, IMAGE_CHANNEL, 32])
+        b_conv1 = bias_variable([32])
         h_conv1 = tf.nn.relu(conv2d(x_images, W_conv1) + b_conv1)
-    # 畳み込み層1_2の作成
-    with tf.name_scope('conv1_2') as scope:
-        W_conv1_2 = weight_variable([5, 5, consta1, consta1_2])
-        b_conv1_2 = bias_variable([consta1_2])
-        h_conv1_2 = tf.nn.relu(conv2d(h_conv1, W_conv1_2) + b_conv1_2)
     # プーリング層1の作成
     with tf.name_scope('pool1') as scope:
-        h_pool1 = max_pool_2x2(h_conv1_2)
+        h_pool1 = max_pool_2x2(h_conv1)
     # 畳み込み層2の作成
     with tf.name_scope('conv2') as scope:
-        W_conv2 = weight_variable([5, 5, consta1_2, consta2])
-        b_conv2 = bias_variable([consta2])
+        W_conv2 = weight_variable([5, 5, 32, 64])
+        b_conv2 = bias_variable([64])
         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-    # 畳み込み層2の作成
-    with tf.name_scope('conv2_2') as scope:
-        W_conv2_2 = weight_variable([5, 5, consta2, consta2_2])
-        b_conv2_2 = bias_variable([consta2_2])
-        h_conv2_2 = tf.nn.relu(conv2d(h_conv2, W_conv2_2) + b_conv2_2)
     # プーリング層2の作成
     with tf.name_scope('pool2') as scope:
-        h_pool2 = max_pool_2x2(h_conv2_2)
+        h_pool2 = max_pool_2x2(h_conv2)
     # 全結合層1の作成
     with tf.name_scope('fc1') as scope:
-        W_fc1 = weight_variable([(IMAGE_SIZE/REDUCTION)*(IMAGE_SIZE/REDUCTION)*consta2_2, consta3])
-        b_fc1 = bias_variable([consta3])
-        h_pool2_flat = tf.reshape(h_pool2, [-1, (IMAGE_SIZE/REDUCTION)*(IMAGE_SIZE/REDUCTION)*consta2_2])
+        W_fc1 = weight_variable([(IMAGE_SIZE/REDUCTION)*(IMAGE_SIZE/REDUCTION)*64, 1024])
+        b_fc1 = bias_variable([1024])
+        h_pool2_flat = tf.reshape(h_pool2, [-1, (IMAGE_SIZE/REDUCTION)*(IMAGE_SIZE/REDUCTION)*64])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
         # dropoutの設定
         h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
     # 全結合層2の作成
     with tf.name_scope('fc2') as scope:
-        W_fc2 = weight_variable([consta3, NUM_CLASSES])
+        W_fc2 = weight_variable([1024, NUM_CLASSES])
         b_fc2 = bias_variable([NUM_CLASSES])
     # ソフトマックス関数による正規化
     with tf.name_scope('softmax') as scope:
