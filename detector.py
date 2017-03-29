@@ -1,8 +1,10 @@
+# coding: UTF-8
 import cv2
 import numpy as np
 import math
 from math import sin, cos
 from os import path
+import camera
 
 # cascades_dir = path.normpath(path.join(cv2.__file__, '..', '..', '..', '..', 'share', 'OpenCV', 'haarcascades'))
 cascades_dir = "haarcascades"
@@ -76,7 +78,7 @@ def detect(img):
     return faces
 
 if __name__ == "__main__":
-    img = cv2.imread("tmp/lena.jpg")
+    img = cv2.imread("tmp/images.jpg")
     faces = detect(img)
     # import pdb; pdb.set_trace()
     for face in faces:
@@ -86,9 +88,15 @@ if __name__ == "__main__":
         h = int(face['h'])
         point1 = tuple([cx-w/2,cy-h/2])
         point2 = tuple([cx+w/2,cy+h/2])
+        # point1 = tuple([cx,cy])
+        # point2 = tuple([cx+w,cy+h])
         face_cut = img[point1[1]:point2[1],point1[0]:point2[0]]
+        cv2.rectangle(img, point1, point2, (0,0,255), 1)
         cv2.namedWindow("face", cv2.WINDOW_NORMAL)
-        cv2.imshow("face", face_cut)
+        cv2.imshow("face", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-    # cv2.imwrite("tmp/horikita_face_0001.jpg", face_cut)
+    # frame = camera.face(img)
+    # フレームを表示する(時間も計測する)
+    # cv2.imshow("image", frame)
+    cv2.imwrite("tmp/face_0001.jpg", img)

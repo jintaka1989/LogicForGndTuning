@@ -1,42 +1,17 @@
 # coding: UTF-8
-# import pdb; pdb.set_trace()
 import pdb
 import cv2
 import time
 import glob
-import os
-import sys
 
-def save_faces_from(path, num = 0):
-    #　元画像パス
-    faces = []
-    files = glob.glob(path + "/*.jpg")
-    # 保存先
-    dir_path = "class" + str(num)
-    save_files = glob.glob(dir_path + "/*")
-    if len(save_files) == 0:
-        i = 0
-    else:
-        i = int(max(save_files).replace(".jpg", "").replace("tmp/", ""))
-
-    for f in files:
-        print(f)
-        img = cv2.imread(f)
-        faces = cut_faces(img)
-        # import pdb; pdb.set_trace()
-        for face in faces:
-            # import pdb; pdb.set_trace()
-            save_path = dir_path + '/' + str(i) + '.jpg'
-            cv2.imwrite(save_path, face)
-            i += 1
-
-def cut_faces(img):
-    faces = []
+def face(img):
     color = (255, 255, 255) #白
     font_color = (0, 255, 0)
     font = cv2.FONT_HERSHEY_PLAIN
     font_size = 1
     cascade = create_cascade()
+    dir_path = "tmp/face"
+    i = 0
     # グレースケール変換
     gray = cv2.cvtColor(img, cv2.cv.CV_BGR2GRAY)
 
@@ -48,11 +23,13 @@ def cut_faces(img):
         for rect in facerect:
             cv2.rectangle(img, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]), color, thickness=2)
             cv2.putText(img,"recognizing face",(10,10),font, font_size,font_color)
-            face = cut(img, rect)
-            faces.append(face)
+            save_path = dir_path + '/' + str(i) + '.jpg'
+            i += 1
+            cut_and_save(img, save_path, rect)
     else:
         print("no face")
-    return faces
+
+    return img
 
 def capture_camera(mirror=True, size=None):
     # カメラをキャプチャする
@@ -165,15 +142,6 @@ def cut_and_save(image, path, rect):
     #認識結果の保存
     cv2.imwrite(path, dst)
 
-def cut(image, rect):
-    # 顔だけ切り出して保存
-    x = rect[0]
-    y = rect[1]
-    width = rect[2]
-    height = rect[3]
-    dst = image[y:y + height, x:x + width]
-    return dst
-
 def recognize_face(mirror=True, size=None):
 
     # これは、BGRの順になっている気がする
@@ -237,6 +205,3 @@ def recognize_face(mirror=True, size=None):
     # キャプチャを解放する
     cap.release()
     cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    save_faces_from("tmp/origin")
